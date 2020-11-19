@@ -560,6 +560,9 @@ class MSSQLQueryBuilder(QueryBuilder):
         self._limit = limit
 
     def _offset_sql(self) -> str:
+        if not self._orderbys:
+            return " ORDER BY (SELECT NULL) OFFSET {offset} ROWS".format(offset=self._offset or 0)
+
         return " OFFSET {offset} ROWS".format(offset=self._offset or 0)
 
     def _limit_sql(self) -> str:

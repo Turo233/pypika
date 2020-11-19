@@ -48,3 +48,23 @@ class SelectTests(unittest.TestCase):
         q = MSSQLQuery.from_("abc").select("def").orderby("def").fetch_next(10).offset(10)
 
         self.assertEqual('SELECT "def" FROM "abc" ORDER BY "def" OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY', str(q))
+
+    def test_limit_without_order(self):
+        q = MSSQLQuery.from_("abc").select("def").limit(10)
+
+        self.assertEqual('SELECT "def" FROM "abc" ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', str(q))
+
+    def test_fetch_next_without_order(self):
+        q = MSSQLQuery.from_("abc").select("def").fetch_next(10)
+
+        self.assertEqual('SELECT "def" FROM "abc" ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', str(q))
+
+    def test_offset_without_order(self):
+        q = MSSQLQuery.from_("abc").select("def").offset(10)
+
+        self.assertEqual('SELECT "def" FROM "abc" ORDER BY (SELECT NULL) OFFSET 10 ROWS', str(q))
+
+    def test_fetch_next_with_offset_without_order(self):
+        q = MSSQLQuery.from_("abc").select("def").fetch_next(10).offset(10)
+
+        self.assertEqual('SELECT "def" FROM "abc" ORDER BY (SELECT NULL) OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY', str(q))
